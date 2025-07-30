@@ -16,10 +16,11 @@ pub fn establish_ollama_connection() -> Ollama {
 }
 
 
-pub async fn generate_response(params: CliCommand, ollama: &Ollama) -> GenerationResponse {
+pub async fn generate_response(params: &CliCommand, ollama: &Ollama) -> GenerationResponse {
     ollama
         .generate(
-            GenerationRequest::new(params.model, params.command)
+            GenerationRequest::new(params.model.clone(), params.command.clone())
+                .think(true)
         )
         .await
         .expect("Generating messages failed")

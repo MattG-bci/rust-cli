@@ -1,18 +1,7 @@
-
-#[derive(Debug)]
+use clap::Parser;
+#[derive(Parser)]
 pub struct CliCommand {
-    command: String,
-    model: String,
-    path_to_file: String
+    pub command: String,
+    pub model: String,
+    pub path_to_file: String
 }
-
-impl CliCommand {
-    pub fn new(command: String, model: String, path_to_file: String) -> Self {
-        CliCommand { command, model, path_to_file }
-    }
-}
-
-
-
-
-

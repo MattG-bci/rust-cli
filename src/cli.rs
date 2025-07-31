@@ -20,7 +20,6 @@ pub async fn generate_response(params: &CliCommand, ollama: &Ollama) -> Generati
     ollama
         .generate(
             GenerationRequest::new(params.model.clone(), params.command.clone())
-                .think(true)
         )
         .await
         .expect("Generating messages failed")

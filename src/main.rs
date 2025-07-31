@@ -2,7 +2,7 @@ mod cli;
 mod docs;
 use clap::Parser;
 use ollama_rs::Ollama;
-
+use lopdf::Document;
 
 #[tokio::main]
 async fn main() {
@@ -12,5 +12,12 @@ async fn main() {
 
     println!("{}", response.await.response);
 
-    let pdf_file = docs::convert_pdf_to_text(cli_params.path_to_file);
+    let doc = Document::load(cli_params.path_to_file);
+    match doc {
+        Ok(doc) => {
+            let text = doc.extract_text(&[1]).unwrap();
+            println!("Text: {:?}", text);
+        },
+        Err(e) => println!("{}", e)
+    }
 }

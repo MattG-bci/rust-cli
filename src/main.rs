@@ -2,7 +2,6 @@ mod cli;
 mod docs;
 use clap::Parser;
 use ollama_rs::Ollama;
-use lopdf::Document;
 
 #[tokio::main]
 async fn main() {
@@ -12,12 +11,14 @@ async fn main() {
 
     println!("{}", response.await.response);
 
-    let doc = Document::load(cli_params.path_to_file);
-    match doc {
-        Ok(doc) => {
-            let text = doc.extract_text(&[1]).unwrap();
-            println!("Text: {:?}", text);
-        },
-        Err(e) => println!("{}", e)
+
+    let pdf_text = docs::convert_pdf_to_text(&cli_params.path_to_file);
+    match pdf_text {
+        Ok(pdf_text) => {
+            println!("Number of pages: {}", pdf_text.len());
+            println!("Text from the first page: {}", pdf_text[0])
+        }
+        Err(e) => panic!("{}", e)
     }
+
 }

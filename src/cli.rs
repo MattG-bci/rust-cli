@@ -16,10 +16,21 @@ pub fn establish_ollama_connection() -> Ollama {
 }
 
 
-pub async fn generate_response(params: &CliCommand, ollama: &Ollama) -> GenerationResponse {
+pub fn concat_text_file_and_command(cmd: &String, text: &Vec<String>) -> String {
+    let mut out = cmd.clone().to_owned();
+    for txt in text {
+        out.push_str(&txt);
+    }
+    out
+}
+
+
+pub async fn generate_response(params: &CliCommand, ollama: &Ollama, text: &Vec<String>) -> GenerationResponse {
+    let prompt = concat_text_file_and_command(&params.command, text);
+
     ollama
         .generate(
-            GenerationRequest::new(params.model.clone(), params.command.clone())
+            GenerationRequest::new(params.model.clone(), prompt)
         )
         .await
         .expect("Generating messages failed")

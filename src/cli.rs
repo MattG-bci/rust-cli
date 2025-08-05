@@ -16,24 +16,33 @@ pub fn establish_ollama_connection() -> Ollama {
 }
 
 
-pub fn concat_text_file_and_command(cmd: &String, text: &Vec<String>) -> String {
+fn concat_text_file_and_command(cmd: &String, text: &String) -> String {
     let mut out = cmd.clone().to_owned();
-    for txt in text {
-        out.push_str(&txt);
-    }
+    out.push_str("\n");
+    out.push_str(&text);
     out
 }
 
+#[test]
+fn test_concat_test_file_and_command() -> () {
+    let str1 = "string1".to_string();
+    let str2 = "string2".to_string();
 
-pub async fn generate_response(params: &CliCommand, ollama: &Ollama, text: &Vec<String>) -> GenerationResponse {
-    let prompt = concat_text_file_and_command(&params.command, text);
+    let out = concat_text_file_and_command(&str1, &str2);
+    let expected = String::from("string1\nstring2");
 
-    ollama
+    assert_eq!(out, expected);
+}
+
+pub async fn generate_response(params: &CliCommand, ollama: &Ollama, text: String) -> GenerationResponse {
+    let prompt = concat_text_file_and_command(&params.command, &text);
+    let response = ollama
         .generate(
             GenerationRequest::new(params.model.clone(), prompt)
         )
         .await
-        .expect("Generating messages failed")
+        .expect("Generating messages failed");
+    response
 }
 
 

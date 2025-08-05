@@ -1,21 +1,17 @@
-use lopdf::Document;
+use std;
 
-pub fn convert_pdf_to_text(doc: &Document) -> Vec<String> {
-   let pages = doc.get_pages();
-    let mut texts = Vec::new();
 
-    for (i, _) in pages.iter().enumerate() {
-        let page_number = i as u32;
-        let text = doc.extract_text(&[page_number]);
-        match text {
-            Ok(text) => {
-                texts.push(text);
-            }
-            Err(e) => {}
-        }
-    }
-    texts
 
+pub fn convert_pdf_to_html(path_to_file: &String) -> std::process::Output {
+    let cmd = std::process::Command::new("pdftohtml")
+        .arg(path_to_file)
+        .arg("./src/.html/output.html")
+    .output().expect("Failed to execute pdftohtml");
+    cmd
+}
+
+pub fn convert_html_to_text(path_to_file: &str) -> String {
+    std::fs::read_to_string(path_to_file).unwrap()
 }
 
 

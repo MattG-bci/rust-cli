@@ -57,3 +57,23 @@ pub fn convert_pdf_to_html(path_to_file: &String) -> std::process::Output {
 pub fn convert_html_to_text(path_to_file: &str) -> String {
     std::fs::read_to_string(path_to_file).unwrap()
 }
+
+
+pub fn strip_file_name_from_path(path_to_file: &String) -> String {
+    path_to_file
+        .split("/")
+        .last()
+        .unwrap()
+        .split(".")
+        .next()
+        .unwrap()
+        .to_string()
+}
+
+#[test]
+fn test_strip_file_name_from_path() {
+    let path = "./usr/docs/test_document.pdf".to_string();
+    let res = strip_file_name_from_path(&path);
+    assert_eq!(res, "test_document".to_string());
+}
+

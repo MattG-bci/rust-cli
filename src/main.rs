@@ -1,7 +1,9 @@
 mod cli;
 mod docs;
+mod api;
 use clap::Parser;
 use ollama_rs::Ollama;
+use api::check_api_status;
 
 #[tokio::main]
 async fn main() {
@@ -12,6 +14,8 @@ async fn main() {
     file_type.convert_file_to_html(&cli_params.path_to_file);
     let html_txt = docs::convert_html_to_text("./src/.html/outputs.html");
     let llm_response = cli::generate_response(&cli_params, &ollama, html_txt);
-    println!("{}", llm_response.await.response);
     docs::dump_files();
+    let check = check_api_status().await;
+    println!("{}", check.text().await.unwrap());
+    println!("{}", llm_response.await.response);
 }

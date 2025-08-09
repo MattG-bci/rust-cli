@@ -1,6 +1,8 @@
 mod cli;
 mod docs;
 mod api;
+
+use api::api::post_llm_response;
 use clap::Parser;
 use ollama_rs::Ollama;
 
@@ -14,5 +16,5 @@ async fn main() {
     let html_txt = docs::convert_html_to_text("./src/.html/outputs.html");
     let llm_response = cli::generate_response(&cli_params, &ollama, html_txt);
     docs::dump_files();
-    api::post_llm_response("output", llm_response.await.response).await;
+    post_llm_response("output", llm_response.await.response).await;
 }

@@ -1,7 +1,8 @@
-use std::fmt::format;
 use reqwest;
 use reqwest::Response;
 use dotenv::dotenv;
+use crate::api::client::APIClient;
+
 
 pub async fn check_api_status() -> Response {
     dotenv().ok();
@@ -17,15 +18,8 @@ pub async fn check_api_status() -> Response {
 
 pub async fn post_llm_response(name: &str, content: String) -> () {
     dotenv().ok();
-    let client = reqwest::Client::builder().danger_accept_invalid_certs(true).build().unwrap();
-    client
-        .post(format!("https://127.0.0.1:27124/vault/{}.md", name))
-        .header("Authorization", format!("Bearer {}", std::env::var("OBSIDIAN_API_KEY").unwrap()))
-        .header("Content-Type", "text/plain")
-        .body(content)
-        .send()
-        .await
-        .unwrap();
+    let client = APIClient::new();
+    client.post(content, name).await;
 }
 
 

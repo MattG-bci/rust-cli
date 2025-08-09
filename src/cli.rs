@@ -46,4 +46,8 @@ pub async fn generate_response(params: &CliCommand, ollama: &Ollama, text: Strin
 }
 
 
+// 1. Support more doc formats (docs, html, md, xml, tx)
+// 2. Communicate my code with Obsidian for i/o
+// 3. More tests
+
 

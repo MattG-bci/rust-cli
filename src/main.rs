@@ -13,4 +13,5 @@ async fn main() {
     let html_txt = docs::convert_html_to_text("./src/.html/outputs.html");
     let llm_response = cli::generate_response(&cli_params, &ollama, html_txt);
     println!("{}", llm_response.await.response);
+    docs::dump_files();
 }

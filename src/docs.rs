@@ -10,13 +10,26 @@ impl FileType {
     pub fn convert_file_to_html(&self, path_to_file: &String) -> () {
         match self {
             FileType::HTML => {
-
+                save_html_file(path_to_file);
             }
             FileType::PDF => {
                 convert_pdf_to_html(path_to_file);
             }
         }
     }
+}
+
+
+pub fn dump_files() -> () {
+    let files = std::fs::read_dir("./src/.html/").unwrap();
+    for file in files {
+        std::fs::remove_file(file.unwrap().path()).unwrap();
+    }
+}
+
+
+fn save_html_file(path_to_file: &String) -> () {
+    std::fs::copy(path_to_file, "./src/.html//outputs.html").unwrap();
 }
 
 

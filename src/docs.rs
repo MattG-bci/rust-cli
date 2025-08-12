@@ -1,6 +1,5 @@
 use std;
 
-
 pub enum FileType {
     HTML,
     PDF,
@@ -19,7 +18,6 @@ impl FileType {
     }
 }
 
-
 pub fn dump_files() -> () {
     let files = std::fs::read_dir("./src/.html/").unwrap();
     for file in files {
@@ -27,11 +25,9 @@ pub fn dump_files() -> () {
     }
 }
 
-
 fn save_html_file(path_to_file: &String) -> () {
     std::fs::copy(path_to_file, "./src/.html/outputs.html").unwrap();
 }
-
 
 pub fn identify_file_format(path_to_file: &String) -> FileType {
     let file_extension = path_to_file.split('.').last().unwrap();
@@ -41,7 +37,6 @@ pub fn identify_file_format(path_to_file: &String) -> FileType {
     }
 }
 
-
 pub fn convert_pdf_to_html(path_to_file: &String) -> std::process::Output {
     if !std::path::Path::new("./src/.html").exists() {
         std::fs::create_dir("./src/.html").unwrap();
@@ -50,14 +45,14 @@ pub fn convert_pdf_to_html(path_to_file: &String) -> std::process::Output {
     let cmd = std::process::Command::new("pdftohtml")
         .arg(path_to_file)
         .arg("./src/.html/output.html")
-    .output().expect("Failed to execute pdftohtml");
+        .output()
+        .expect("Failed to execute pdftohtml");
     cmd
 }
 
 pub fn convert_html_to_text(path_to_file: &str) -> String {
     std::fs::read_to_string(path_to_file).unwrap()
 }
-
 
 pub fn strip_file_name_from_path(path_to_file: &String) -> String {
     path_to_file
@@ -70,7 +65,6 @@ pub fn strip_file_name_from_path(path_to_file: &String) -> String {
         .to_string()
 }
 
-
 #[cfg(test)]
 mod tests {
     use crate::docs;
@@ -80,6 +74,4 @@ mod tests {
         let res = docs::strip_file_name_from_path(&path);
         assert_eq!(res, "test_document".to_string());
     }
-
 }
-

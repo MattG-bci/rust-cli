@@ -1,6 +1,6 @@
+mod api;
 mod cli;
 mod docs;
-mod api;
 
 use api::api::post_llm_response;
 use clap::Parser;

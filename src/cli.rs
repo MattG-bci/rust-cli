@@ -1,6 +1,6 @@
 use clap::Parser;
-use ollama_rs::Ollama;
 use ollama_rs::generation::completion::{request, GenerationResponse};
+use ollama_rs::Ollama;
 use request::GenerationRequest;
 use serde_yaml;
 
@@ -8,7 +8,7 @@ use serde_yaml;
 pub struct CliCommand {
     pub command: String,
     pub model: String,
-    pub path_to_file: String
+    pub path_to_file: String,
 }
 
 fn get_prompt_initial_message(command: &String) -> String {
@@ -19,15 +19,13 @@ fn get_prompt_initial_message(command: &String) -> String {
     let fit_prompt = prompts.get(&lower_command).and_then(|x| x.as_str());
     match fit_prompt {
         Some(fit_prompt) => fit_prompt.to_string(),
-        None => panic!("Did not find prompt for the provided command: {}", command)
+        None => panic!("Did not find prompt for the provided command: {}", command),
     }
 }
-
 
 pub fn establish_ollama_connection() -> Ollama {
     Ollama::default()
 }
-
 
 fn concat_text_file_and_command(cmd: &String, text: &String) -> String {
     let mut out = cmd.clone().to_owned();
@@ -36,13 +34,15 @@ fn concat_text_file_and_command(cmd: &String, text: &String) -> String {
     out
 }
 
-pub async fn generate_response(params: &CliCommand, ollama: &Ollama, text: String) -> GenerationResponse {
+pub async fn generate_response(
+    params: &CliCommand,
+    ollama: &Ollama,
+    text: String,
+) -> GenerationResponse {
     let initial_message = get_prompt_initial_message(&params.command);
     let prompt = concat_text_file_and_command(&initial_message, &text);
     let response = ollama
-        .generate(
-            GenerationRequest::new(params.model.clone(), prompt)
-        )
+        .generate(GenerationRequest::new(params.model.clone(), prompt))
         .await
         .expect("Generating messages failed");
     response
@@ -68,6 +68,4 @@ mod tests {
         let prompt = cli::get_prompt_initial_message(&command);
         assert_eq!(prompt, "You are the most efficient writer. Summarise this document the best way possible. Keep it concise but include crucial details.");
     }
-
 }
-

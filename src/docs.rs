@@ -29,7 +29,7 @@ pub fn dump_files() -> () {
 
 
 fn save_html_file(path_to_file: &String) -> () {
-    std::fs::copy(path_to_file, "./src/.html//outputs.html").unwrap();
+    std::fs::copy(path_to_file, "./src/.html/outputs.html").unwrap();
 }
 
 
@@ -70,10 +70,16 @@ pub fn strip_file_name_from_path(path_to_file: &String) -> String {
         .to_string()
 }
 
-#[test]
-fn test_strip_file_name_from_path() {
-    let path = "./usr/docs/test_document.pdf".to_string();
-    let res = strip_file_name_from_path(&path);
-    assert_eq!(res, "test_document".to_string());
+
+#[cfg(test)]
+mod tests {
+    use crate::docs;
+    #[test]
+    fn test_strip_file_name_from_path() {
+        let path = "./usr/docs/test_document.pdf".to_string();
+        let res = docs::strip_file_name_from_path(&path);
+        assert_eq!(res, "test_document".to_string());
+    }
+
 }
 

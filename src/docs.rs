@@ -3,6 +3,7 @@ use std;
 pub enum FileType {
     HTML,
     PDF,
+    DOC
 }
 
 impl FileType {
@@ -13,6 +14,9 @@ impl FileType {
             }
             FileType::PDF => {
                 convert_pdf_to_html(path_to_file);
+            }
+            FileType::DOC => {
+
             }
         }
     }
@@ -33,7 +37,9 @@ pub fn identify_file_format(path_to_file: &String) -> FileType {
     let file_extension = path_to_file.split('.').last().unwrap();
     match file_extension {
         "pdf" => FileType::PDF,
-        _ => FileType::HTML,
+        "html" => FileType::HTML,
+        "doc" => FileType::DOC,
+        _ => panic!("Unsupported file extension: {}", file_extension),
     }
 }
 

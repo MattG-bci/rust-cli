@@ -10,3 +10,5 @@ tokio = { version = "1", features = ["full"] }
 reqwest = "0.12.22"
 dotenv = "0.15.0"
 serde_yaml = "0.9.34"
+html2md = "0.2.15"
+log = "0.4.27"

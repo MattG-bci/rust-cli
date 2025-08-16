@@ -1,4 +1,7 @@
+use dotenv::dotenv;
 use reqwest;
+use std;
+use log::info;
 
 pub struct APIClient {
     obsidian_url: String,
@@ -20,9 +23,17 @@ impl APIClient {
         }
     }
 
-    pub async fn get(&self, path: &str) -> () {}
+    pub async fn post_to_obsidian(&self, content: String, doc_name: &str) -> () {
+        let api_status = Self::check_api_status(&self).await;
+        match api_status {
+            Ok(api_status) => {
+                info!("API Status: {}", api_status.status());
+            }
+            Err(api_error) => {
+                panic!("Obsidian API not working due to: {}", api_error);
+            }
+        }
 
-    pub async fn post(&self, content: String, doc_name: &str) -> () {
         self.client
             .post(format!(
                 "{}/{}/{}.md",
@@ -34,5 +45,19 @@ impl APIClient {
             .send()
             .await
             .unwrap();
+    }
+    async fn check_api_status(&self) -> Result<reqwest::Response, reqwest::Error> {
+        dotenv().ok();
+        let res = self.client
+            .get(
+                format!("{}/active", self.obsidian_url)
+            )
+            .header(
+                "Authorization",
+                format!("Bearer {}", self.auth_token),
+            )
+            .send()
+            .await?;
+        Ok(res)
     }
 }

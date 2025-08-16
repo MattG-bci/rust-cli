@@ -4,6 +4,8 @@ pub enum FileType {
     HTML,
     PDF,
     DOC,
+    MD,
+    TXT
 }
 
 impl FileType {
@@ -18,14 +20,13 @@ impl FileType {
             FileType::DOC => {
                 convert_doc_to_html(path_to_file);
             }
-        }
-    }
-}
+            FileType::MD => {
 
-pub fn dump_files() -> () {
-    let files = std::fs::read_dir("./src/.html/").unwrap();
-    for file in files {
-        std::fs::remove_file(file.unwrap().path()).unwrap();
+            }
+            FileType::TXT => {
+
+            }
+        }
     }
 }
 

@@ -3,7 +3,7 @@ use std;
 pub enum FileType {
     HTML,
     PDF,
-    DOC
+    DOC,
 }
 
 impl FileType {
@@ -16,7 +16,7 @@ impl FileType {
                 convert_pdf_to_html(path_to_file);
             }
             FileType::DOC => {
-                convert_docx_to_html(path_to_file);
+                convert_doc_to_html(path_to_file);
             }
         }
     }
@@ -43,18 +43,27 @@ pub fn identify_file_format(path_to_file: &String) -> FileType {
     }
 }
 
-fn convert_docx_to_html(path_to_file: &String) -> () {
+fn convert_doc_to_html(path_to_file: &String) -> () {
     if !std::path::Path::new("./src/.html").exists() {
         std::fs::create_dir("./src/.html").unwrap();
     }
     std::process::Command::new("soffice")
-        .arg("--convert-to")
-        .arg("html")
-        .arg("--outdir")
-        .arg("./src/.html")
-        .arg(path_to_file)
+        .args([
+            "--convert-to",
+            "html",
+            "--outdir",
+            "./src/.html",
+            path_to_file,
+        ])
         .output()
         .expect("Failed to execute soffice convert");
+
+    let filename = strip_file_name_from_path(path_to_file);
+    std::fs::rename(
+        format!("./src/.html/{}.html", filename),
+        "./src/.html/outputs.html",
+    )
+    .unwrap()
 }
 
 fn convert_pdf_to_html(path_to_file: &String) -> () {
@@ -73,7 +82,7 @@ pub fn convert_html_to_text(path_to_file: &str) -> String {
     std::fs::read_to_string(path_to_file).unwrap()
 }
 
-pub fn strip_file_name_from_path(path_to_file: &String) -> String {
+pub fn strip_file_name_from_path(path_to_file: &String) -> &str {
     path_to_file
         .split("/")
         .last()
@@ -81,7 +90,6 @@ pub fn strip_file_name_from_path(path_to_file: &String) -> String {
         .split(".")
         .next()
         .unwrap()
-        .to_string()
 }
 
 #[cfg(test)]
@@ -91,6 +99,6 @@ mod tests {
     fn test_strip_file_name_from_path() {
         let path = "./usr/docs/test_document.pdf".to_string();
         let res = docs::strip_file_name_from_path(&path);
-        assert_eq!(res, "test_document".to_string());
+        assert_eq!(res, "test_document");
     }
 }

@@ -5,7 +5,7 @@ pub enum FileType {
     PDF,
     DOC,
     MD,
-    TXT
+    TXT,
 }
 
 impl FileType {
@@ -20,12 +20,8 @@ impl FileType {
             FileType::DOC => {
                 convert_doc_to_html(path_to_file);
             }
-            FileType::MD => {
-
-            }
-            FileType::TXT => {
-
-            }
+            FileType::MD => {}
+            FileType::TXT => {}
         }
     }
 }

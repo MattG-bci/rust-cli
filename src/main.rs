@@ -4,9 +4,9 @@ mod docs;
 
 use api::api::post_llm_response;
 use clap::Parser;
-use ollama_rs::Ollama;
 use html2md;
 use html2md::parse_html;
+use ollama_rs::Ollama;
 
 #[tokio::main]
 async fn main() {

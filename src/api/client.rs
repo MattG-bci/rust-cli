@@ -1,7 +1,7 @@
 use dotenv::dotenv;
+use log::info;
 use reqwest;
 use std;
-use log::info;
 
 pub struct APIClient {
     obsidian_url: String,
@@ -48,14 +48,10 @@ impl APIClient {
     }
     async fn check_api_status(&self) -> Result<reqwest::Response, reqwest::Error> {
         dotenv().ok();
-        let res = self.client
-            .get(
-                format!("{}/active", self.obsidian_url)
-            )
-            .header(
-                "Authorization",
-                format!("Bearer {}", self.auth_token),
-            )
+        let res = self
+            .client
+            .get(format!("{}/active", self.obsidian_url))
+            .header("Authorization", format!("Bearer {}", self.auth_token))
             .send()
             .await?;
         Ok(res)

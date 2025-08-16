@@ -16,7 +16,7 @@ impl FileType {
                 convert_pdf_to_html(path_to_file);
             }
             FileType::DOC => {
-
+                convert_docx_to_html(path_to_file);
             }
         }
     }
@@ -43,17 +43,30 @@ pub fn identify_file_format(path_to_file: &String) -> FileType {
     }
 }
 
-pub fn convert_pdf_to_html(path_to_file: &String) -> std::process::Output {
+fn convert_docx_to_html(path_to_file: &String) -> () {
+    if !std::path::Path::new("./src/.html").exists() {
+        std::fs::create_dir("./src/.html").unwrap();
+    }
+    std::process::Command::new("soffice")
+        .arg("--convert-to")
+        .arg("html")
+        .arg("--outdir")
+        .arg("./src/.html")
+        .arg(path_to_file)
+        .output()
+        .expect("Failed to execute soffice convert");
+}
+
+fn convert_pdf_to_html(path_to_file: &String) -> () {
     if !std::path::Path::new("./src/.html").exists() {
         std::fs::create_dir("./src/.html").unwrap();
     }
 
-    let cmd = std::process::Command::new("pdftohtml")
+    std::process::Command::new("pdftohtml")
         .arg(path_to_file)
         .arg("./src/.html/output.html")
         .output()
         .expect("Failed to execute pdftohtml");
-    cmd
 }
 
 pub fn convert_html_to_text(path_to_file: &str) -> String {

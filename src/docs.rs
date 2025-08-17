@@ -1,3 +1,4 @@
+use html2md;
 use std;
 
 pub enum FileType {
@@ -9,19 +10,29 @@ pub enum FileType {
 }
 
 impl FileType {
-    pub fn convert_file_to_html(&self, path_to_file: &String) -> () {
+    pub fn transform_document_text_to_string(&self, path_to_file: &String) -> String {
+        let out_path: &str = "./src/.html/outputs.html";
         match self {
             FileType::HTML => {
                 save_html_file(path_to_file);
+                let html_text = std::fs::read_to_string(out_path).unwrap();
+                let markdown_text = html2md::parse_html(&html_text[..]);
+                markdown_text
             }
             FileType::PDF => {
                 convert_pdf_to_html(path_to_file);
+                let html_text = std::fs::read_to_string(out_path).unwrap();
+                let markdown_text = html2md::parse_html(&html_text[..]);
+                markdown_text
             }
             FileType::DOC => {
                 convert_doc_to_html(path_to_file);
+                let html_text = std::fs::read_to_string(out_path).unwrap();
+                let markdown_text = html2md::parse_html(&html_text[..]);
+                markdown_text
             }
-            FileType::MD => {}
-            FileType::TXT => {}
+            FileType::MD => std::fs::read_to_string(out_path).unwrap(),
+            FileType::TXT => std::fs::read_to_string(out_path).unwrap(),
         }
     }
 }
@@ -73,10 +84,6 @@ fn convert_pdf_to_html(path_to_file: &String) -> () {
         .arg("./src/.html/output.html")
         .output()
         .expect("Failed to execute pdftohtml");
-}
-
-pub fn convert_html_to_text(path_to_file: &str) -> String {
-    std::fs::read_to_string(path_to_file).unwrap()
 }
 
 pub fn strip_file_name_from_path(path_to_file: &String) -> &str {

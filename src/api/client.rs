@@ -3,16 +3,16 @@ use log::info;
 use reqwest;
 use std;
 
-pub struct APIClient {
+pub struct ObsidianClient {
     obsidian_url: String,
     auth_token: String,
     vault_name: String,
     client: reqwest::Client,
 }
 
-impl APIClient {
-    pub fn new() -> APIClient {
-        APIClient {
+impl ObsidianClient {
+    pub fn new() -> ObsidianClient {
+        ObsidianClient {
             obsidian_url: std::env::var("OBSIDIAN_URL").unwrap(),
             auth_token: std::env::var("OBSIDIAN_API_KEY").unwrap(),
             vault_name: std::env::var("OBSIDIAN_VAULT_NAME").unwrap(),

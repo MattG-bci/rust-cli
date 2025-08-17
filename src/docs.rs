@@ -5,7 +5,7 @@ pub enum FileType {
     HTML,
     PDF,
     DOC,
-    MD,
+    MARKDOWN,
     TXT,
 }
 
@@ -31,7 +31,7 @@ impl FileType {
                 let markdown_text = html2md::parse_html(&html_text[..]);
                 markdown_text
             }
-            FileType::MD => std::fs::read_to_string(out_path).unwrap(),
+            FileType::MARKDOWN => std::fs::read_to_string(out_path).unwrap(),
             FileType::TXT => std::fs::read_to_string(out_path).unwrap(),
         }
     }
@@ -47,41 +47,38 @@ pub fn identify_file_format(path_to_file: &String) -> FileType {
         "pdf" => FileType::PDF,
         "html" => FileType::HTML,
         "doc" => FileType::DOC,
+        "md" => FileType::MARKDOWN,
+        "txt" => FileType::TXT,
         _ => panic!("Unsupported file extension: {}", file_extension),
     }
 }
 
 fn convert_doc_to_html(path_to_file: &String) -> () {
-    if !std::path::Path::new("./src/.html").exists() {
-        std::fs::create_dir("./src/.html").unwrap();
+    let out_path: &str = "./src/.html";
+    if !std::path::Path::new(out_path).exists() {
+        std::fs::create_dir(out_path).unwrap();
     }
     std::process::Command::new("soffice")
-        .args([
-            "--convert-to",
-            "html",
-            "--outdir",
-            "./src/.html",
-            path_to_file,
-        ])
+        .args(["--convert-to", "html", "--outdir", out_path, path_to_file])
         .output()
         .expect("Failed to execute soffice convert");
 
     let filename = strip_file_name_from_path(path_to_file);
     std::fs::rename(
-        format!("./src/.html/{}.html", filename),
-        "./src/.html/outputs.html",
+        format!("{}/{}.html", out_path, filename),
+        format!("{}/outputs.html", out_path),
     )
     .unwrap()
 }
 
 fn convert_pdf_to_html(path_to_file: &String) -> () {
-    if !std::path::Path::new("./src/.html").exists() {
-        std::fs::create_dir("./src/.html").unwrap();
+    let out_path: &str = "./src/.html";
+    if !std::path::Path::new(out_path).exists() {
+        std::fs::create_dir(out_path).unwrap();
     }
 
     std::process::Command::new("pdftohtml")
-        .arg(path_to_file)
-        .arg("./src/.html/output.html")
+        .args([path_to_file, format!("{}/outputs.html", out_path).as_str()])
         .output()
         .expect("Failed to execute pdftohtml");
 }

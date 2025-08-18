@@ -1,5 +1,6 @@
 use html2md;
 use std;
+use std::io::Error;
 
 pub enum FileType {
     HTML,
@@ -10,35 +11,36 @@ pub enum FileType {
 }
 
 impl FileType {
-    pub fn transform_document_text_to_string(&self, path_to_file: &String) -> String {
+    pub fn transform_document_text_to_string(
+        &self,
+        path_to_file: &String,
+    ) -> Result<String, Error> {
         let out_path: &str = "./src/.html/outputs.html";
-        match self {
+        let markdown_text: String = match self {
             FileType::HTML => {
-                save_html_file(path_to_file);
-                let html_text = std::fs::read_to_string(out_path).unwrap();
-                let markdown_text = html2md::parse_html(&html_text[..]);
-                markdown_text
+                save_html_file(path_to_file)?;
+                let html_text = std::fs::read_to_string(out_path)?;
+                html2md::parse_html(&html_text[..])
             }
             FileType::PDF => {
                 convert_pdf_to_html(path_to_file);
-                let html_text = std::fs::read_to_string(out_path).unwrap();
-                let markdown_text = html2md::parse_html(&html_text[..]);
-                markdown_text
+                let html_text = std::fs::read_to_string(out_path)?;
+                html2md::parse_html(&html_text[..])
             }
             FileType::DOC => {
                 convert_doc_to_html(path_to_file);
-                let html_text = std::fs::read_to_string(out_path).unwrap();
-                let markdown_text = html2md::parse_html(&html_text[..]);
-                markdown_text
+                let html_text = std::fs::read_to_string(out_path)?;
+                html2md::parse_html(&html_text[..])
             }
-            FileType::MARKDOWN => std::fs::read_to_string(out_path).unwrap(),
-            FileType::TXT => std::fs::read_to_string(out_path).unwrap(),
-        }
+            FileType::MARKDOWN => std::fs::read_to_string(out_path)?,
+            FileType::TXT => std::fs::read_to_string(out_path)?,
+        };
+        Ok(markdown_text)
     }
 }
 
-fn save_html_file(path_to_file: &String) -> () {
-    std::fs::copy(path_to_file, "./src/.html/outputs.html").unwrap();
+fn save_html_file(path_to_file: &String) -> Result<u64, Error> {
+    std::fs::copy(path_to_file, "./src/.html/outputs.html")
 }
 
 pub fn identify_file_format(path_to_file: &String) -> FileType {

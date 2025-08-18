@@ -1,6 +1,5 @@
 use crate::api::client::ObsidianClient;
 use dotenv::dotenv;
-use reqwest;
 
 pub async fn post_llm_response(name: &str, content: String) -> () {
     dotenv().ok();

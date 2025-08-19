@@ -11,16 +11,16 @@ pub struct CliCommand {
     pub path_to_file: String,
 }
 
-fn get_prompt_initial_message(command: &String) -> String {
+fn get_prompt_initial_message(command: &String) -> Result<String, Box<dyn std::error::Error>> {
     let lower_command = command.to_lowercase();
-    let file = std::fs::File::open("src/prompts/prompts.yaml").expect("Prompt file missing");
-    let prompts: serde_yaml::Value = serde_yaml::from_reader(file).expect("Prompts file invalid");
+    let file = std::fs::File::open("src/prompts/prompts.yaml")?;
+    let prompts: serde_yaml::Value = serde_yaml::from_reader(file)?;
 
-    let fit_prompt = prompts.get(&lower_command).and_then(|x| x.as_str());
-    match fit_prompt {
-        Some(fit_prompt) => fit_prompt.to_string(),
-        None => panic!("Did not find prompt for the provided command: {}", command),
-    }
+    let fit_prompt = prompts
+        .get(&lower_command)
+        .and_then(|x| x.as_str())
+        .ok_or("Command not found")?;
+    Ok(fit_prompt.to_string())
 }
 
 pub fn establish_ollama_connection() -> Ollama {
@@ -38,14 +38,14 @@ pub async fn generate_response(
     params: &CliCommand,
     ollama: &Ollama,
     text: String,
-) -> GenerationResponse {
-    let initial_message = get_prompt_initial_message(&params.command);
+) -> Result<GenerationResponse, Box<dyn std::error::Error>> {
+    let initial_message = get_prompt_initial_message(&params.command)?;
     let prompt = concat_text_file_and_command(&initial_message, &text);
     let response = ollama
         .generate(GenerationRequest::new(params.model.clone(), prompt))
         .await
         .expect("Generating messages failed");
-    response
+    Ok(response)
 }
 
 #[cfg(test)]
@@ -65,7 +65,7 @@ mod tests {
     #[test]
     fn test_get_prompt_initial_message() -> () {
         let command = "summarise".to_string();
-        let prompt = cli::get_prompt_initial_message(&command);
+        let prompt = cli::get_prompt_initial_message(&command).unwrap();
         assert_eq!(prompt, "You are the most efficient writer. Summarise this document the best way possible. Keep it concise but include crucial details.");
     }
 }

@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>>  {
 
     let file_type = docs::identify_file_format(&cli_params.path_to_file);
     let markdown_text = file_type.transform_document_text_to_string(&cli_params.path_to_file)?;
-    let llm_response = cli::generate_response(&cli_params, &ollama, markdown_text);
+    let llm_response = cli::generate_response(&cli_params, &ollama, markdown_text).await?;
     let file_name = docs::strip_file_name_from_path(&cli_params.path_to_file);
-    Ok(post_llm_response(&file_name, llm_response.await.response).await)
+    Ok(post_llm_response(&file_name, llm_response.response).await)
 }

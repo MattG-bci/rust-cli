@@ -3,6 +3,56 @@ use log::info;
 use reqwest;
 use std;
 
+
+pub enum Client {
+    LocalClient(LocalClient),
+    ObsidianClient(ObsidianClient),
+}
+
+impl Client {
+    pub fn new() -> Client {
+        dotenv().ok();
+        let client_type = std::env::var("CLIENT_TYPE").unwrap();
+        match client_type.as_str() {
+            "local" => Client::LocalClient(LocalClient::new()),
+            "obsidian" => Client::ObsidianClient(ObsidianClient::new()),
+            _ => panic!("Unsupported client type: {}", client_type),
+        }
+    }
+
+    pub async fn post(&self, content: String, doc_name: &str) -> () {
+        match self {
+            Client::LocalClient(client) => { client.post_locally(content, doc_name); },
+            Client::ObsidianClient(client) => { client.post_to_obsidian(content, doc_name).await; }
+        }
+    }
+}
+
+pub struct LocalClient {
+    out_path: String,
+}
+
+impl LocalClient {
+    pub fn new() -> LocalClient {
+        dotenv().ok();
+        LocalClient {
+            out_path: std::env::var("OUT_PATH").unwrap()
+        }
+    }
+
+    pub fn post_locally(&self, content: String, doc_name: &str) -> () {
+        if !std::fs::exists(&self.out_path).unwrap() {
+            std::fs::create_dir_all(&self.out_path).unwrap();
+        }
+
+        std::fs::write(
+            format!("{}/{}.txt", &self.out_path, doc_name),
+            content
+        ).unwrap();
+    }
+}
+
+
 pub struct ObsidianClient {
     obsidian_url: String,
     auth_token: String,

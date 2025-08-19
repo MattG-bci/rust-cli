@@ -97,7 +97,7 @@ pub fn strip_file_name_from_path(path_to_file: &String) -> &str {
 
 #[cfg(test)]
 mod tests {
-    use crate::docs;
+    use crate::io::docs;
     #[test]
     fn test_strip_file_name_from_path() {
         let path = "./usr/docs/test_document.pdf".to_string();

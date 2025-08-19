@@ -5,7 +5,7 @@ use request::GenerationRequest;
 use serde_yaml;
 
 #[derive(Parser)]
-pub struct CliCommand {
+pub struct LLMCommand {
     pub command: String,
     pub model: String,
     pub path_to_file: String,
@@ -35,7 +35,7 @@ fn concat_text_file_and_command(cmd: &String, text: &String) -> String {
 }
 
 pub async fn generate_response(
-    params: &CliCommand,
+    params: &LLMCommand,
     ollama: &Ollama,
     text: String,
 ) -> Result<GenerationResponse, Box<dyn std::error::Error>> {
@@ -50,7 +50,7 @@ pub async fn generate_response(
 
 #[cfg(test)]
 mod tests {
-    use crate::cli;
+    use crate::llm::cli;
     #[test]
     fn test_concat_test_file_and_command() -> () {
         let str1 = "string1".to_string();

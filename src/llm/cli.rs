@@ -51,6 +51,7 @@ pub async fn generate_response(
 #[cfg(test)]
 mod tests {
     use crate::llm::cli;
+
     #[test]
     fn test_concat_test_file_and_command() -> () {
         let str1 = "string1".to_string();

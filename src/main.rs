@@ -1,14 +1,14 @@
 mod api;
-mod llm;
 mod io;
+mod llm;
 
 use api::api::post_llm_response;
 use clap::Parser;
-use ollama_rs::Ollama;
 use llm::cli;
+use ollama_rs::Ollama;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>>  {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli_params: cli::LLMCommand = cli::LLMCommand::parse();
     let ollama: Ollama = cli::establish_ollama_connection();
 

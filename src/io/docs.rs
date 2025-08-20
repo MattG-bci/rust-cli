@@ -2,6 +2,7 @@ use html2md;
 use std;
 use std::io::Error;
 
+#[derive(PartialEq, Debug)]
 pub enum FileType {
     HTML,
     PDF,
@@ -98,10 +99,23 @@ pub fn strip_file_name_from_path(path_to_file: &String) -> &str {
 #[cfg(test)]
 mod tests {
     use crate::io::docs;
+    use crate::io::docs::{identify_file_format, FileType};
+
     #[test]
     fn test_strip_file_name_from_path() {
         let path = "./usr/docs/test_document.pdf".to_string();
         let res = docs::strip_file_name_from_path(&path);
         assert_eq!(res, "test_document");
+    }
+
+    #[test]
+    fn test_identify_file_format() {
+        let pdf_path = "root/path.pdf".to_string();
+        let html_path = "root/outputs.html".to_string();
+        let doc_path = "root/outputs.doc".to_string();
+
+        assert_eq!(FileType::PDF, identify_file_format(&pdf_path));
+        assert_eq!(FileType::HTML, identify_file_format(&html_path));
+        assert_eq!(FileType::DOC, identify_file_format(&doc_path));
     }
 }

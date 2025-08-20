@@ -3,7 +3,6 @@ use log::info;
 use reqwest;
 use std;
 
-
 pub enum Client {
     LocalClient(LocalClient),
     ObsidianClient(ObsidianClient),
@@ -22,8 +21,12 @@ impl Client {
 
     pub async fn post(&self, content: String, doc_name: &str) -> () {
         match self {
-            Client::LocalClient(client) => { client.post_locally(content, doc_name); },
-            Client::ObsidianClient(client) => { client.post_to_obsidian(content, doc_name).await; }
+            Client::LocalClient(client) => {
+                client.post_locally(content, doc_name);
+            }
+            Client::ObsidianClient(client) => {
+                client.post_to_obsidian(content, doc_name).await;
+            }
         }
     }
 }
@@ -36,7 +39,7 @@ impl LocalClient {
     pub fn new() -> LocalClient {
         dotenv().ok();
         LocalClient {
-            out_path: std::env::var("OUT_PATH").unwrap()
+            out_path: std::env::var("OUT_PATH").unwrap(),
         }
     }
 
@@ -45,13 +48,9 @@ impl LocalClient {
             std::fs::create_dir_all(&self.out_path).unwrap();
         }
 
-        std::fs::write(
-            format!("{}/{}.txt", &self.out_path, doc_name),
-            content
-        ).unwrap();
+        std::fs::write(format!("{}/{}.txt", &self.out_path, doc_name), content).unwrap();
     }
 }
-
 
 pub struct ObsidianClient {
     obsidian_url: String,

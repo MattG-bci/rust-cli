@@ -1,5 +1,4 @@
 use dotenv::dotenv;
-use log::info;
 use reqwest;
 use std;
 
@@ -19,15 +18,17 @@ impl Client {
         }
     }
 
-    pub async fn post(&self, content: String, doc_name: &str) -> () {
+    pub async fn post(&self, content: String, doc_name: &str) -> Result<(), Box<dyn std::error::Error>> {
         match self {
             Client::LocalClient(client) => {
-                client.post_locally(content, doc_name);
+                client.post_locally(content, doc_name)?;
             }
             Client::ObsidianClient(client) => {
-                client.post_to_obsidian(content, doc_name).await;
+                client.post_to_obsidian(content, doc_name).await?;
             }
+
         }
+        Ok(())
     }
 }
 
@@ -43,12 +44,13 @@ impl LocalClient {
         }
     }
 
-    pub fn post_locally(&self, content: String, doc_name: &str) -> () {
-        if !std::fs::exists(&self.out_path).unwrap() {
-            std::fs::create_dir_all(&self.out_path).unwrap();
+    pub fn post_locally(&self, content: String, doc_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+        if !std::fs::exists(&self.out_path)? {
+            std::fs::create_dir_all(&self.out_path)?;
         }
 
-        std::fs::write(format!("{}/{}.txt", &self.out_path, doc_name), content).unwrap();
+        std::fs::write(format!("{}/{}.txt", &self.out_path, doc_name), content)?;
+        Ok(())
     }
 }
 
@@ -72,17 +74,8 @@ impl ObsidianClient {
         }
     }
 
-    pub async fn post_to_obsidian(&self, content: String, doc_name: &str) -> () {
-        let api_status = Self::check_api_status(&self).await;
-        match api_status {
-            Ok(api_status) => {
-                info!("API Status: {}", api_status.status());
-            }
-            Err(api_error) => {
-                panic!("Obsidian API not working due to: {}", api_error);
-            }
-        }
-
+    pub async fn post_to_obsidian(&self, content: String, doc_name: &str) -> Result<(), reqwest::Error> {
+        Self::check_api_status(&self).await?;
         self.client
             .post(format!(
                 "{}/{}/{}.md",
@@ -92,8 +85,8 @@ impl ObsidianClient {
             .header("Content-Type", "text/plain")
             .body(content)
             .send()
-            .await
-            .unwrap();
+            .await?;
+        Ok(())
     }
     async fn check_api_status(&self) -> Result<reqwest::Response, reqwest::Error> {
         dotenv().ok();

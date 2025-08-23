@@ -67,10 +67,13 @@ fn convert_doc_to_html(path_to_file: &String) -> Result<(), Error> {
         .output()?;
 
     let filename = strip_file_name_from_path(path_to_file);
-    std::fs::rename(
-        format!("{}/{}.html", out_path, filename),
-        format!("{}/outputs.html", out_path),
-    )
+    if let Some(filename) = filename {
+        std::fs::rename(
+            format!("{}/{}.html", out_path, filename),
+            format!("{}/outputs.html", out_path),
+        )?
+    };
+    Ok(())
 }
 
 fn convert_pdf_to_html(path_to_file: &String) -> std::io::Result<Output> {
@@ -84,14 +87,8 @@ fn convert_pdf_to_html(path_to_file: &String) -> std::io::Result<Output> {
         .output()
 }
 
-pub fn strip_file_name_from_path(path_to_file: &String) -> &str {
-    path_to_file
-        .split("/")
-        .last()
-        .unwrap()
-        .split(".")
-        .next()
-        .unwrap()
+pub fn strip_file_name_from_path(path_to_file: &String) -> Option<&str> {
+    std::path::Path::new(path_to_file).file_stem()?.to_str()
 }
 
 #[cfg(test)]
@@ -102,7 +99,7 @@ mod tests {
     #[test]
     fn test_strip_file_name_from_path() {
         let path = "./usr/docs/test_document.pdf".to_string();
-        let res = docs::strip_file_name_from_path(&path);
+        let res = docs::strip_file_name_from_path(&path).unwrap();
         assert_eq!(res, "test_document");
     }
 

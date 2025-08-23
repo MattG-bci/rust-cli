@@ -1,11 +1,7 @@
-mod api;
-mod errors;
-mod io;
-mod llm;
-
-use api::api::post_llm_response;
+use rust_cli::io;
+use rust_cli::api::api::post_llm_response;
 use clap::Parser;
-use llm::cli;
+use rust_cli::llm::cli;
 use ollama_rs::Ollama;
 
 #[tokio::main]

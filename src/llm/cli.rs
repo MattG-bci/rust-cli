@@ -14,7 +14,7 @@ pub struct LLMCommand {
     pub path_to_file: String,
 }
 
-fn get_prompt_initial_message(command: &String) -> Result<String, Box<dyn std::error::Error>> {
+pub fn get_prompt_initial_message(command: &String) -> Result<String, Box<dyn std::error::Error>> {
     let lower_command = command.to_lowercase();
     let file = std::fs::File::open("src/prompts/prompts.yaml")?;
     let prompts: serde_yaml::Value = serde_yaml::from_reader(file)?;
@@ -30,7 +30,7 @@ pub fn establish_connection_with_ollama() -> Ollama {
     Ollama::default()
 }
 
-fn concat_text_file_and_command(cmd: &String, text: &String) -> String {
+pub fn concat_text_file_and_command(cmd: &String, text: &String) -> String {
     let mut out = cmd.clone().to_owned();
     out.push_str("\n");
     out.push_str(&text);

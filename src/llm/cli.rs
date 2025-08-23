@@ -8,6 +8,8 @@ use serde_yaml;
 pub struct LLMCommand {
     pub command: String,
     pub model: String,
+    #[arg(long)]
+    pub with_thinking: bool,
     pub path_to_file: String,
 }
 
@@ -41,11 +43,16 @@ pub async fn generate_response(
 ) -> Result<GenerationResponse, Box<dyn std::error::Error>> {
     let initial_message = get_prompt_initial_message(&params.command)?;
     let prompt = concat_text_file_and_command(&initial_message, &text);
-    let response = ollama
-        .generate(GenerationRequest::new(params.model.clone(), prompt))
-        .await
-        .expect("Generating messages failed");
-    Ok(response)
+    let request = GenerationRequest::new(params.model.clone(), prompt);
+    if let true = params.with_thinking {
+        let request_with_thinking = request.clone().think(true);
+        let response = ollama.generate(request_with_thinking).await?;
+        Ok(response)
+    } else {
+        let response = ollama.generate(request).await?;
+        Ok(response)
+    }
+
 }
 
 #[cfg(test)]

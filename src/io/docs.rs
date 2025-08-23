@@ -1,6 +1,7 @@
 use html2md;
 use std;
 use std::io::Error;
+use std::process::Output;
 
 #[derive(PartialEq, Debug)]
 pub enum FileType {
@@ -24,12 +25,12 @@ impl FileType {
                 html2md::parse_html(&html_text[..])
             }
             FileType::PDF => {
-                convert_pdf_to_html(path_to_file);
+                convert_pdf_to_html(path_to_file)?;
                 let html_text = std::fs::read_to_string(out_path)?;
                 html2md::parse_html(&html_text[..])
             }
             FileType::DOC => {
-                convert_doc_to_html(path_to_file);
+                convert_doc_to_html(path_to_file)?;
                 let html_text = std::fs::read_to_string(out_path)?;
                 html2md::parse_html(&html_text[..])
             }
@@ -56,33 +57,31 @@ pub fn identify_file_format(path_to_file: &String) -> FileType {
     }
 }
 
-fn convert_doc_to_html(path_to_file: &String) -> () {
+fn convert_doc_to_html(path_to_file: &String) -> Result<(), Error> {
     let out_path: &str = "./src/.html";
     if !std::path::Path::new(out_path).exists() {
-        std::fs::create_dir(out_path).unwrap();
+        std::fs::create_dir(out_path)?;
     }
     std::process::Command::new("soffice")
         .args(["--convert-to", "html", "--outdir", out_path, path_to_file])
-        .output()
-        .expect("Failed to execute soffice convert");
+        .output()?;
 
     let filename = strip_file_name_from_path(path_to_file);
     std::fs::rename(
         format!("{}/{}.html", out_path, filename),
         format!("{}/outputs.html", out_path),
     )
-    .unwrap()
 }
 
-fn convert_pdf_to_html(path_to_file: &String) -> () {
+fn convert_pdf_to_html(path_to_file: &String) -> std::io::Result<Output> {
     let out_path: &str = "./src/.html";
     if !std::path::Path::new(out_path).exists() {
-        std::fs::create_dir(out_path).ok();
+        std::fs::create_dir(out_path)?;
     }
 
     std::process::Command::new("pdftohtml")
         .args([path_to_file, format!("{}/outputs.html", out_path).as_str()])
-        .output().ok();
+        .output()
 }
 
 pub fn strip_file_name_from_path(path_to_file: &String) -> &str {

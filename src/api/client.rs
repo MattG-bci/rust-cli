@@ -18,7 +18,11 @@ impl Client {
         }
     }
 
-    pub async fn post(&self, content: String, doc_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn post(
+        &self,
+        content: String,
+        doc_name: &str,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         match self {
             Client::LocalClient(client) => {
                 client.post_locally(content, doc_name)?;
@@ -26,7 +30,6 @@ impl Client {
             Client::ObsidianClient(client) => {
                 client.post_to_obsidian(content, doc_name).await?;
             }
-
         }
         Ok(())
     }
@@ -44,7 +47,11 @@ impl LocalClient {
         }
     }
 
-    pub fn post_locally(&self, content: String, doc_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn post_locally(
+        &self,
+        content: String,
+        doc_name: &str,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         if !std::fs::exists(&self.out_path)? {
             std::fs::create_dir_all(&self.out_path)?;
         }
@@ -65,15 +72,19 @@ impl ObsidianClient {
     pub fn new() -> ObsidianClient {
         ObsidianClient {
             obsidian_url: std::env::var("OBSIDIAN_URL").expect("OBSIDIAN_URL env var not set"),
-            auth_token: std::env::var("OBSIDIAN_API_KEY").expect("OBSIDIAN_API_KEY env var not set"),
-            vault_name: std::env::var("OBSIDIAN_VAULT_NAME").expect("OBSIDIAN_VAULT_NAME env var not set"),
-            client: reqwest::Client::builder()
-                .build()
-                .unwrap(),
+            auth_token: std::env::var("OBSIDIAN_API_KEY")
+                .expect("OBSIDIAN_API_KEY env var not set"),
+            vault_name: std::env::var("OBSIDIAN_VAULT_NAME")
+                .expect("OBSIDIAN_VAULT_NAME env var not set"),
+            client: reqwest::Client::builder().build().unwrap(),
         }
     }
 
-    pub async fn post_to_obsidian(&self, content: String, doc_name: &str) -> Result<(), reqwest::Error> {
+    pub async fn post_to_obsidian(
+        &self,
+        content: String,
+        doc_name: &str,
+    ) -> Result<(), reqwest::Error> {
         Self::check_api_status(&self).await?;
         self.client
             .post(format!(

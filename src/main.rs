@@ -1,4 +1,5 @@
 mod api;
+mod errors;
 mod io;
 mod llm;
 
@@ -10,7 +11,7 @@ use ollama_rs::Ollama;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli_params: cli::LLMCommand = cli::LLMCommand::parse();
-    let ollama: Ollama = cli::establish_ollama_connection();
+    let ollama: Ollama = cli::establish_connection_with_ollama();
 
     let file_type = io::docs::identify_file_format(&cli_params.path_to_file);
     let markdown_text = file_type.transform_document_text_to_string(&cli_params.path_to_file)?;

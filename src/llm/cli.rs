@@ -1,3 +1,4 @@
+use crate::errors;
 use clap::Parser;
 use ollama_rs::generation::completion::{request, GenerationResponse};
 use ollama_rs::Ollama;
@@ -21,11 +22,11 @@ fn get_prompt_initial_message(command: &String) -> Result<String, Box<dyn std::e
     let fit_prompt = prompts
         .get(&lower_command)
         .and_then(|x| x.as_str())
-        .ok_or("Command not found")?;
+        .ok_or_else(|| errors::Error::PromptNotFound)?;
     Ok(fit_prompt.to_string())
 }
 
-pub fn establish_ollama_connection() -> Ollama {
+pub fn establish_connection_with_ollama() -> Ollama {
     Ollama::default()
 }
 
@@ -52,7 +53,6 @@ pub async fn generate_response(
         let response = ollama.generate(request).await?;
         Ok(response)
     }
-
 }
 
 #[cfg(test)]

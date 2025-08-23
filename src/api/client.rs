@@ -10,7 +10,7 @@ pub enum Client {
 impl Client {
     pub fn new() -> Client {
         dotenv().ok();
-        let client_type = std::env::var("CLIENT_TYPE").unwrap();
+        let client_type = std::env::var("CLIENT_TYPE").expect("CLIENT_TYPE env var not set");
         match client_type.as_str() {
             "local" => Client::LocalClient(LocalClient::new()),
             "obsidian" => Client::ObsidianClient(ObsidianClient::new()),
@@ -40,7 +40,7 @@ impl LocalClient {
     pub fn new() -> LocalClient {
         dotenv().ok();
         LocalClient {
-            out_path: std::env::var("OUT_PATH").unwrap(),
+            out_path: std::env::var("OUT_PATH").expect("OUT_PATH env var not set"),
         }
     }
 
@@ -64,11 +64,10 @@ pub struct ObsidianClient {
 impl ObsidianClient {
     pub fn new() -> ObsidianClient {
         ObsidianClient {
-            obsidian_url: std::env::var("OBSIDIAN_URL").unwrap(),
-            auth_token: std::env::var("OBSIDIAN_API_KEY").unwrap(),
-            vault_name: std::env::var("OBSIDIAN_VAULT_NAME").unwrap(),
+            obsidian_url: std::env::var("OBSIDIAN_URL").expect("OBSIDIAN_URL env var not set"),
+            auth_token: std::env::var("OBSIDIAN_API_KEY").expect("OBSIDIAN_API_KEY env var not set"),
+            vault_name: std::env::var("OBSIDIAN_VAULT_NAME").expect("OBSIDIAN_VAULT_NAME env var not set"),
             client: reqwest::Client::builder()
-                .danger_accept_invalid_certs(true)
                 .build()
                 .unwrap(),
         }

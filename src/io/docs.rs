@@ -77,13 +77,12 @@ fn convert_doc_to_html(path_to_file: &String) -> () {
 fn convert_pdf_to_html(path_to_file: &String) -> () {
     let out_path: &str = "./src/.html";
     if !std::path::Path::new(out_path).exists() {
-        std::fs::create_dir(out_path).unwrap();
+        std::fs::create_dir(out_path).ok();
     }
 
     std::process::Command::new("pdftohtml")
         .args([path_to_file, format!("{}/outputs.html", out_path).as_str()])
-        .output()
-        .expect("Failed to execute pdftohtml");
+        .output().ok();
 }
 
 pub fn strip_file_name_from_path(path_to_file: &String) -> &str {

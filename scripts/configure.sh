@@ -9,8 +9,10 @@ PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 sed -i '' "/alias rust-llm-configure=/d" ~/.zshrc 2>/dev/null || true
 sed -i '' "/alias rust-llm-run=/d" ~/.zshrc 2>/dev/null || true
 
-echo "alias rust-llm-configure=\"cd $SCRIPT_DIR && ./configure.sh\"" >> ~/.zshrc
-echo "alias rust-llm=\"f(){ cd $PARENT_DIR && cargo run \"\$@\"; }; f\"" >> ~/.zshrc
+{
+    echo "alias rust-llm-configure=\"cd '$SCRIPT_DIR' && ./configure.sh\""
+    echo "alias rust-llm() { cd '$PARENT_DIR' && cargo run \"\$@\"; }"
+} >> ~/.zshrc
 echo "Configured aliases in ~/.zshrc"
 
 read -p "Do you want outputs to be local or in obsidian: " CLIENT_TYPE

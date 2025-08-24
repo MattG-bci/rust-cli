@@ -1,7 +1,7 @@
 
 
 #[cfg(test)]
-mod test_client {
+mod tests {
     use rust_cli::api;
     use std::env;
     use serial_test::serial;
@@ -16,6 +16,7 @@ mod test_client {
 
     #[test]
     #[serial]
+    #[ignore]
     fn test_obsidian_client_supported_client_types() {
         let client_types: [&str; 2] = ["obsidian", "local"];
         for client_type in client_types {

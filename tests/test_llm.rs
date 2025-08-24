@@ -1,12 +1,17 @@
 #[cfg(test)]
 mod tests {
-    use ollama_rs::generation::completion::GenerationResponse;
     use ollama_rs::generation::completion::request::GenerationRequest;
-    use rust_cli::llm::cli::{concat_text_file_and_command, get_prompt_initial_message, LLMCommand};
+    use ollama_rs::generation::completion::GenerationResponse;
+    use rust_cli::llm::cli::{
+        concat_text_file_and_command, get_prompt_initial_message, LLMCommand,
+    };
 
     struct MockOllama;
     impl MockOllama {
-        async fn generate(&self, _request: GenerationRequest<'_>) -> Result<GenerationResponse, Box<dyn std::error::Error>> {
+        async fn generate(
+            &self,
+            _request: GenerationRequest<'_>,
+        ) -> Result<GenerationResponse, Box<dyn std::error::Error>> {
             Ok(GenerationResponse {
                 model: "".to_string(),
                 created_at: "".to_string(),
@@ -53,7 +58,8 @@ mod tests {
             path_to_file: "".to_string(),
         };
 
-        let result = generate_response_testable(&params, &mock_ollama, "input text".to_string()).await;
+        let result =
+            generate_response_testable(&params, &mock_ollama, "input text".to_string()).await;
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap().response, "test response");

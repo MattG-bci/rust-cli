@@ -1,8 +1,8 @@
-use rust_cli::io;
-use rust_cli::api::api::post_llm_response;
 use clap::Parser;
-use rust_cli::llm::cli;
 use ollama_rs::Ollama;
+use rust_cli::api::api::post_llm_response;
+use rust_cli::io;
+use rust_cli::llm::cli;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

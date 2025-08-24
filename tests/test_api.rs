@@ -1,10 +1,8 @@
-
-
 #[cfg(test)]
 mod tests {
     use rust_cli::api;
-    use std::env;
     use serial_test::serial;
+    use std::env;
 
     #[should_panic]
     #[test]
@@ -24,11 +22,4 @@ mod tests {
             api::client::Client::new();
         }
     }
-
 }
-
-
-
-
-
-

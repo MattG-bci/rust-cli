@@ -6,12 +6,13 @@ touch .env
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 
-sed -i '' "/alias rust-llm-configure=/d" ~/.zshrc 2>/dev/null || true
-sed -i '' "/alias rust-llm-run=/d" ~/.zshrc 2>/dev/null || true
-
 {
-    echo "alias rust-llm-configure=\"cd '$SCRIPT_DIR' && ./configure.sh\""
-    echo "alias rust-llm() { cd '$PARENT_DIR' && cargo run \"\$@\"; }"
+    echo "alias rust-llm-configure=\"(cd '$SCRIPT_DIR' && ./configure.sh)\""
+    echo "rust-llm() {
+    local org_dir=$(pwd)
+    cd '$PARENT_DIR' && cargo run \"\$@\"
+    cd "$org_dir"
+    }"
 } >> ~/.zshrc
 echo "Configured aliases in ~/.zshrc"
 

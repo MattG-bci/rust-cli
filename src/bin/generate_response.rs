@@ -11,7 +11,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let file_type = io::docs::identify_file_format(&cli_params.path_to_file);
     let markdown_text = file_type.transform_document_text_to_string(&cli_params.path_to_file)?;
-    let llm_response = cli::generate_response(&cli_params, &ollama, markdown_text).await?;
+    let prompt = cli::prepare_prompt(&cli_params.command, markdown_text);
+    let llm_response = cli::generate_response(&cli_params, prompt, &ollama).await?;
     let file_name = io::docs::strip_file_name_from_path(&cli_params.path_to_file);
 
     if let Some(file_name) = file_name {

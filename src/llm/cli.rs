@@ -37,14 +37,21 @@ pub fn concat_text_file_and_command(cmd: &String, text: &String) -> String {
     out
 }
 
+pub fn prepare_prompt(
+    command: &String,
+    text: String,
+) -> Result<String, Box<dyn std::error::Error>> {
+    let initial_message = get_prompt_initial_message(command)?;
+    let prompt = concat_text_file_and_command(&initial_message, &text);
+    Ok(prompt)
+}
+
 pub async fn generate_response(
     params: &LLMCommand,
+    prompt: Result<String, Box<dyn std::error::Error>>,
     ollama: &Ollama,
-    text: String,
 ) -> Result<GenerationResponse, Box<dyn std::error::Error>> {
-    let initial_message = get_prompt_initial_message(&params.command)?;
-    let prompt = concat_text_file_and_command(&initial_message, &text);
-    let request = GenerationRequest::new(params.model.clone(), prompt);
+    let request = GenerationRequest::new(params.model.clone(), prompt?);
     if let true = params.with_thinking {
         let request_with_thinking = request.clone().think(true);
         let response = ollama.generate(request_with_thinking).await?;
@@ -58,6 +65,15 @@ pub async fn generate_response(
 #[cfg(test)]
 mod tests {
     use crate::llm::cli;
+    use crate::llm::cli::prepare_prompt;
+
+    #[test]
+    fn test_prepare_prompt() {
+        let command = String::from("summarise");
+        let md_txt = "Markdown Markdown".to_string();
+        let result = prepare_prompt(&command, md_txt).unwrap();
+        assert_eq!(result, "You are the most efficient writer. Summarise this document the best way possible. Keep it concise but include crucial details.\nMarkdown Markdown");
+    }
 
     #[test]
     fn test_concat_test_file_and_command() -> () {
